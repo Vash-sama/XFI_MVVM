@@ -1,0 +1,52 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using XFI_MVVM.Models;
+
+namespace XFI_MVVM.Core
+{
+    internal class ViewsStore
+    {
+        private static ViewsStore _instance;
+
+        private ViewsStore()
+        { }
+
+        /// <summary>
+        /// Gets the persistent instance.
+        /// </summary>
+        public static ViewsStore Instance => _instance ?? (_instance = new ViewsStore());
+
+        /// <summary>
+        /// Gets the list of pages registered.
+        /// </summary>
+        internal List<XfiPageView> PageViews { get; } = new List<XfiPageView>();
+
+        internal static XfiPageView GetPage(string url)
+        {
+            // Get current Orientiation and Idiom.
+            var orientiation = Enums.Orientation.GetOrientation();
+            var idiom = Enums.Idiom.GetIdiom();
+
+            // Get all registered pages with the url provided.
+            var pages = Instance.PageViews.Where(b => b.PageURL.ToLower() == url.ToLower());
+
+            // Filter pages with the current Idiom.
+            var foundIdiom = pages.Where(b => b.TargetIdiom == idiom);
+
+            // If none found revert to previous list.
+            if (!foundIdiom.Any())
+                foundIdiom = pages;
+
+            // Filter pages with current Orientation.
+            var foundOrientation = foundIdiom.Where(b => b.TargetOrientation == orientiation);
+
+            // If none found revert to previous list.
+            if (!foundOrientation.Any())
+                foundOrientation = foundIdiom;
+
+            // Return first.
+            return foundOrientation.FirstOrDefault();
+        }
+
+    }
+}
