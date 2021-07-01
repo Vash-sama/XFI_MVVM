@@ -4,8 +4,10 @@
 
     internal interface IXfiPage
     {
-        void SetBinding(XfiViewModel viewModel);
+        internal void SetBinding(XfiViewModel viewModel);
 
-        void SetArgs(object[] args);
+        internal void SetArgs(object[] args);
+
+        internal string PageUrl { get; set; }
     }
 }

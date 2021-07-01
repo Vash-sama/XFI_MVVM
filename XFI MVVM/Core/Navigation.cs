@@ -7,6 +7,7 @@
     using Xamarin.Forms;
     using XFI_MVVM.Enums;
     using XFI_MVVM.Models;
+    using XFI_MVVM.Pages;
 
     public class Navigation : NavigationPage
     {
@@ -30,6 +31,11 @@
         /// <param name="root">Starting page of the navigation.</param>
         public static void Init(string pageUrl)
         {
+            if (string.IsNullOrWhiteSpace(pageUrl))
+            {
+                throw new ArgumentException($"'{nameof(pageUrl)}' cannot be null or whitespace.", nameof(pageUrl));
+            }
+
             var foundPage = ViewsStore.GetPage(pageUrl);
 
             var newPage = foundPage.CreateInstance();
@@ -47,9 +53,14 @@
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task Push(string pageUrl, bool isModal = false, bool allowMultiple = false, bool replace = false)
         {
+            if (string.IsNullOrWhiteSpace(pageUrl))
+            {
+                throw new ArgumentException($"'{nameof(pageUrl)}' cannot be null or whitespace.", nameof(pageUrl));
+            }
+
             var foundPage = ViewsStore.GetPage(pageUrl);
 
-            var openPages = IsPageOpen(foundPage, isModal);
+            var openPages = IsPageOpen(pageUrl, isModal);
 
             Page newPage;
 
@@ -83,7 +94,15 @@
         /// <param name="replace">Whether or not to replace an existing page in the stack with the new page.</param>
         public static void PushSync(string pageUrl, bool isModal = false, bool allowMultiple = false, bool replace = false)
         {
-            _ = Push(pageUrl, isModal, allowMultiple, replace).ConfigureAwait(false);
+            try
+            {
+                var task = Push(pageUrl, isModal, allowMultiple, replace);
+                task.Wait();
+            }
+            catch(Exception ex)
+            {
+                throw ex.InnerException;
+            }
         }
 
         /// <summary>
@@ -105,7 +124,15 @@
         /// <param name="isModal">If the screen to display should be a modal.</param>
         public static void PopSync(bool isModal = false)
         {
-            _ = Pop(isModal).ConfigureAwait(false);
+            try
+            {
+                var task = Pop(isModal);
+                task.Wait();
+            }
+            catch (Exception ex)
+            {
+                throw ex.InnerException;
+            }
         }
 
         /// <summary>
@@ -121,15 +148,14 @@
             new XfiPageView(url, view, viewModel, targetIdiom, targetOrientation).Register();
         }
 
-
-        private static List<Page> IsPageOpen(XfiPageView page, bool isModal)
+        private static List<Page> IsPageOpen(string url, bool isModal)
         {
             var stack = Instance.Navigation.NavigationStack;
             if (isModal)
                 stack = Instance.Navigation.ModalStack;
 
-            // Find if the page already exists in the sac
-            return (from b in stack where b.GetType().Equals(page.PageView) select b).ToList();
+            // Find if the page already exists in the stack
+            return (from b in stack where ((IXfiPage)b).PageUrl == url select b).ToList();
         }
 
         private static void RemovePages(List<Page> openPages)

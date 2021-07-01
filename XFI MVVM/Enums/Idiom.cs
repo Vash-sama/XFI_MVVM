@@ -9,12 +9,12 @@
         {
         }
 
-        public static Idiom Phone = new Idiom(0, nameof(Phone));
-        public static Idiom Tablet = new Idiom(1, nameof(Tablet));
-        public static Idiom Desktop = new Idiom(2, nameof(Desktop));
-        public static Idiom TV = new Idiom(3, nameof(TV));
-        public static Idiom Watch = new Idiom(4, nameof(Watch));
-
+        public static Idiom Phone = new(0, nameof(Phone));
+        public static Idiom Tablet = new(1, nameof(Tablet));
+        public static Idiom Desktop = new(2, nameof(Desktop));
+        public static Idiom TV = new(3, nameof(TV));
+        public static Idiom Watch = new(4, nameof(Watch));
+        
         public static Idiom GetIdiom()
         {
             if (DeviceInfo.Idiom == DeviceIdiom.Phone)
@@ -42,7 +42,8 @@
                 return Watch;
             }
 
-            throw new Exceptions.IdiomNotSupportedException($"Idiom {DeviceInfo.Idiom} is not supported yet.");
+            // TODO : change to system default.
+            return Phone;
         }
     }
 }

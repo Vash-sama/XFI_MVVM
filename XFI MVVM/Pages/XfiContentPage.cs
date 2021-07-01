@@ -13,6 +13,8 @@
         /// </summary>
         public object[] Args { get; private set; }
 
+        string IXfiPage.PageUrl { get ; set; }
+
         void IXfiPage.SetBinding(XfiViewModel viewModel)
         {
             this.BindingContext = viewModel;

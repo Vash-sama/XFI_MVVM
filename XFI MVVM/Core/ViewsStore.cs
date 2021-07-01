@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using XFI_MVVM.Exceptions;
     using XFI_MVVM.Models;
 
     internal class ViewsStore
@@ -14,7 +15,7 @@
         /// <summary>
         /// Gets the persistent instance.
         /// </summary>
-        public static ViewsStore Instance => _instance ?? (_instance = new ViewsStore());
+        public static ViewsStore Instance => _instance ??= new ViewsStore();
 
         /// <summary>
         /// Gets the list of pages registered.
@@ -44,8 +45,10 @@
             if (!foundOrientation.Any())
                 foundOrientation = foundIdiom;
 
-            // Return first.
-            return foundOrientation.FirstOrDefault();
+            // first from remaining list.
+            var foundPage = foundOrientation.FirstOrDefault();
+
+            return foundPage ?? throw new PageNotFoundException($"Could not find suitable page for url:'{url}', idiom:'{idiom}', and orientation:'{orientiation}'");
         }     
     }
 }

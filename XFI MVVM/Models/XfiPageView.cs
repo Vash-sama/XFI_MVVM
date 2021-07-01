@@ -12,28 +12,33 @@
         /// <summary>
         /// New XFI PageView
         /// </summary>
-        /// <param name="pageURL">The url and id for the page, used for navigation.</param>
+        /// <param name="pageUrl">The url and id for the page, used for navigation.</param>
         /// <param name="pageView">The type of view for this page (TypeOf XfiPage).</param>
         /// <param name="viewModel">The type viewmodel for this page (TypeOf XfiViewModel).</param>
         /// <param name="targetIdiom">The idiom for this specific view & view model combo.</param>
         /// <param name="targetOrientation">The orientation for this specific view & view model combo.</param>
-        public XfiPageView(string pageURL, Type pageView, Type viewModel, Idiom targetIdiom = null, Orientation targetOrientation = null)
+        public XfiPageView(string pageUrl, Type pageView, Type viewModel, Idiom targetIdiom = null, Orientation targetOrientation = null)
         {
+            if (string.IsNullOrWhiteSpace(pageUrl))
+            {
+                throw new ArgumentException($"'{nameof(pageUrl)}' cannot be null or whitespace.", nameof(pageUrl));
+            }
+
+            this.PageURL = pageUrl;
+            this.PageView = pageView ?? throw new ArgumentNullException(nameof(pageView));
+            this.ViewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            this.TargetIdiom = targetIdiom ?? Idiom.Phone;
+            this.TargetOrientation = targetOrientation ?? Orientation.Portrait;
+
             if (!typeof(XfiViewModel).IsAssignableFrom(viewModel))
             {
-                throw new InvalidViewModelTypeException($"ViewModel type {viewModel} is not a valid IXFIViewModel");
+                throw new InvalidViewModelTypeException($"ViewModel type {viewModel} is not a valid XFI ViewModel");
             }
 
             if (!typeof(IXfiPage).IsAssignableFrom(pageView))
             {
                 throw new InvalidPageTypeException($"Page type {pageView} is not a valid XFI View");
             }
-
-            this.PageURL = pageURL;
-            this.PageView = pageView;
-            this.ViewModel = viewModel;
-            this.TargetIdiom = targetIdiom ?? Idiom.Phone;
-            this.TargetOrientation = targetOrientation ?? Orientation.Portrait;
         }
 
         /// <summary>
@@ -86,6 +91,7 @@
             var xfiPage = (IXfiPage)pageViewInstance;
             xfiPage.SetArgs(args);
             xfiPage.SetBinding(viewModelInstance);
+            xfiPage.PageUrl = this.PageURL;
 
             return pageViewInstance;
         }

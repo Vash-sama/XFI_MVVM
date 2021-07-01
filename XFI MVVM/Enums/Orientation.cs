@@ -12,8 +12,8 @@
         {
         }
 
-        public static Orientation Portrait = new Orientation(0, nameof(Portrait));
-        public static Orientation Landscape = new Orientation(1, nameof(Landscape));
+        public static Orientation Portrait = new(0, nameof(Portrait));
+        public static Orientation Landscape = new(1, nameof(Landscape));
 
         /// <summary>
         /// Get the current orientation of the device.
@@ -21,17 +21,25 @@
         /// <returns>The current orientation as <see cref="Orientation"/> />
         public static Orientation GetOrientation()
         {
-            if (DeviceDisplay.MainDisplayInfo.Orientation == DisplayOrientation.Portrait)
+            try
             {
-                return Portrait;
+                if (DeviceDisplay.MainDisplayInfo.Orientation == DisplayOrientation.Portrait)
+                {
+                    return Portrait;
+                }
+
+                if (DeviceDisplay.MainDisplayInfo.Orientation == DisplayOrientation.Landscape)
+                {
+                    return Landscape;
+                }
+            }
+            catch (System.Exception)
+            {
+                // Swallow exception for unknown.
             }
 
-            if (DeviceDisplay.MainDisplayInfo.Orientation == DisplayOrientation.Landscape)
-            {
-                return Landscape;
-            }
-
-            throw new Exceptions.OrientationNotSupportedException($"Orientation {DeviceDisplay.MainDisplayInfo.Orientation} is not supported yet.");
+            // TODO : change to system default.
+            return Portrait;
         }
     }
 }
