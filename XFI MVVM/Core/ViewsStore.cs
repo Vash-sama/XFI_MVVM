@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using XFI_MVVM.Models;
-
-namespace XFI_MVVM.Core
+﻿namespace XFI_MVVM.Core
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using XFI_MVVM.Models;
+
     internal class ViewsStore
     {
         private static ViewsStore _instance;
@@ -46,7 +46,6 @@ namespace XFI_MVVM.Core
 
             // Return first.
             return foundOrientation.FirstOrDefault();
-        }
-
+        }     
     }
 }

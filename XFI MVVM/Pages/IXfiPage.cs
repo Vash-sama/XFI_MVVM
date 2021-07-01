@@ -1,7 +1,7 @@
-﻿using XFI_MVVM.Models;
-
-namespace XFI_MVVM.Pages
+﻿namespace XFI_MVVM.Pages
 {
+    using XFI_MVVM.Models;
+
     internal interface IXfiPage
     {
         void SetBinding(XfiViewModel viewModel);

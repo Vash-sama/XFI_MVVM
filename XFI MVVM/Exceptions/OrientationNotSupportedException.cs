@@ -1,10 +1,6 @@
-﻿
-
-namespace XFI_MVVM.Exceptions
+﻿namespace XFI_MVVM.Exceptions
 {
-    using System;
-
-    public class OrientationNotSupportedException : Exception
+    public class OrientationNotSupportedException : System.Exception
     {
         public OrientationNotSupportedException(string message) 
             : base(message)

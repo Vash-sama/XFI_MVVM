@@ -1,6 +1,4 @@
-﻿
-
-namespace XFI_MVVM.Enums
+﻿namespace XFI_MVVM.Enums
 {
     using System;
     using System.Collections.Generic;

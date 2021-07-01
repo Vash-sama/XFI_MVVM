@@ -1,10 +1,16 @@
-﻿using Xamarin.Forms;
-using XFI_MVVM.Models;
-
-namespace XFI_MVVM.Pages
+﻿namespace XFI_MVVM.Pages
 {
+    using Xamarin.Forms;
+    using XFI_MVVM.Models;
+
+    /// <summary>
+    /// Inherit to use as a content page view.
+    /// </summary>
     public abstract class XfiContentPage : ContentPage, IXfiPage
     {
+        /// <summary>
+        /// Gets the arguments passed through to this page.
+        /// </summary>
         public object[] Args { get; private set; }
 
         void IXfiPage.SetBinding(XfiViewModel viewModel)

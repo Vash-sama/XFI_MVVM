@@ -1,9 +1,6 @@
-﻿
-namespace XFI_MVVM.Exceptions
+﻿namespace XFI_MVVM.Exceptions
 {
-    using System;
-
-    public class InvalidViewModelTypeException : Exception
+    public class InvalidViewModelTypeException : System.Exception
     {
         public InvalidViewModelTypeException(string message)
             : base(message)

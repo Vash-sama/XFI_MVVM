@@ -1,9 +1,6 @@
-﻿
-namespace XFI_MVVM.Exceptions
+﻿namespace XFI_MVVM.Exceptions
 {
-    using System;
-
-    public class IdiomNotSupportedException : Exception
+    public class IdiomNotSupportedException : System.Exception
     {
         public IdiomNotSupportedException(string message) 
             : base(message)

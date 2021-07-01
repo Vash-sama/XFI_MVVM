@@ -1,7 +1,7 @@
-﻿using Xamarin.Essentials;
-
-namespace XFI_MVVM.Enums
+﻿namespace XFI_MVVM.Enums
 {
+    using Xamarin.Essentials;
+
     public class Idiom : Enumeration
     {
         private Idiom(int id, string name)

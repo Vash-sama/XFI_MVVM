@@ -11,20 +11,37 @@ This package works by using types instead of instances to save having all views 
 The package will select the page to load by prioritsing the idiom, then filtering by orientation, and using the most appropriate page registered, so not all combinations must be registered for it to operate.
 
 ## Basic usage
+Views you wish to use must at some level inherit one of the XFI page types currently supported (more to come):
+
+```csharp
+XFI_MVVM.Pages.XfiContePage
+```
+
+ViewModels must at some level inherit the base ViewModel of the package:
+
+```csharp
+XFI_MVVM.Models.XfiViewModel
+```
+
 Simply register the views and viewmodels to a key and specify the desired idiom and orientation combo then let the package handle the navigation. 
 
 ```csharp
-new XfiPageView("Root", typeof(Views.Phone.Root), typeof(ViewModels.Root), Idiom.Phone, Orientation.Portrait).Register();
-new XfiPageView("Root", typeof(Views.Desktop.Root), typeof(ViewModels.Root), Idiom.Desktop, Orientation.Landscape).Register();
+// Register 2 pages for root, one for phone and another for desktop using different views but the same viewmodel.
+Navigation.Register("Root", typeof(Views.Phone.Root), typeof(ViewModels.Root), Idiom.Phone, Orientation.Portrait);
+Navigation.Register("Root", typeof(Views.Desktop.Root), typeof(ViewModels.Root), Idiom.Desktop, Orientation.Landscape);
 
-new XfiPageView("Page1", typeof(Views.Phone.Page1), typeof(ViewModels.Page1), Idiom.Phone, Orientation.Portrait).Register();
-new XfiPageView("Page1", typeof(Views.Desktop.Page1), typeof(ViewModels.Page1), Idiom.Desktop, Orientation.Landscape).Register();
+// Register 2 pages for page 1, one for phone and another for desktop using differet views and different viewmodels.
+Navigation.Register("Page1", typeof(Views.Phone.Page1), typeof(ViewModels.Page1), Idiom.Phone, Orientation.Portrait);
+Navigation.Register("Page1", typeof(Views.Desktop.Page1), typeof(ViewModels.Page1Destop), Idiom.Desktop, Orientation.Landscape);
 
-new XfiPageView("Page2", typeof(Views.Shared.Page2), typeof(ViewModels.Page2), Idiom.Phone, Orientation.Portrait).Register();
+// Register 1 page for page 2, will always be the page displayed regardless of idiom / orientation.
+Navigation.Register("Page2", typeof(Views.Shared.Page2), typeof(ViewModels.Page2));
 ```
 
-In the above example there are 2 registered views for Root and Page1 both sharing the same viewmodel, but a single view and viewmodel for Page2.  
-This will allow navigation by the shared url / key and the package will automatically choose which view and viewmodel is most suitable to load by simply using:
+In the above example it shows how view models can be shared between different views or also seperated with idiom or orientation.
+It also shows that not all targeted platforms / orientations need seperate views or viewmodels.
+
+Navigation by the shared url / key allows the package to automatically choose which view and viewmodel is most suitable to load by simply using:
 
 ```csharp
 Navigation.PushSync("Page1");

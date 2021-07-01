@@ -1,6 +1,4 @@
-﻿
-
-namespace XFI_MVVM.Models
+﻿namespace XFI_MVVM.Models
 {
     using System;
     using XFI_MVVM.Enums;
@@ -9,7 +7,7 @@ namespace XFI_MVVM.Models
     using Xamarin.Forms;
     using XFI_MVVM.Pages;
 
-    public class XfiPageView
+    internal class XfiPageView
     {
         /// <summary>
         /// New XFI PageView

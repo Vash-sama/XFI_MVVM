@@ -1,10 +1,11 @@
-﻿
-namespace XFI_MVVM.Core
+﻿namespace XFI_MVVM.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Xamarin.Forms;
+    using XFI_MVVM.Enums;
     using XFI_MVVM.Models;
 
     public class Navigation : NavigationPage
@@ -105,6 +106,19 @@ namespace XFI_MVVM.Core
         public static void PopSync(bool isModal = false)
         {
             _ = Pop(isModal).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Register a new page for navigation.
+        /// </summary>
+        /// <param name="url">The url / key for navigation</param>
+        /// <param name="view">The type of view to use for this combination.</param>
+        /// <param name="viewModel">The type of viewmodel to use for this combination.</param>
+        /// <param name="targetIdiom">The perfered idiom for this page.</param>
+        /// <param name="targetOrientation">The prefered orientation for this page.</param>
+        public static void Register(string url, Type view, Type viewModel, Idiom targetIdiom = null, Orientation targetOrientation = null)
+        {
+            new XfiPageView(url, view, viewModel, targetIdiom, targetOrientation).Register();
         }
 
 
