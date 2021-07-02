@@ -15,6 +15,12 @@ namespace Tests
         }
 
         [TestMethod]
+        public void RegisterPage_WithArgs()
+        {
+            Navigation.Register("Root", typeof(RequiredObjects.Views.Page1), typeof(RequiredObjects.ViewModels.Page1), null, null, "Property1", "Property2");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(InvalidViewModelTypeException))]
         public void RegisterPage_InvalidViewModel()
         {

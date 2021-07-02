@@ -17,7 +17,7 @@
         /// <param name="viewModel">The type viewmodel for this page (TypeOf XfiViewModel).</param>
         /// <param name="targetIdiom">The idiom for this specific view & view model combo.</param>
         /// <param name="targetOrientation">The orientation for this specific view & view model combo.</param>
-        public XfiPageView(string pageUrl, Type pageView, Type viewModel, Idiom targetIdiom = null, Orientation targetOrientation = null)
+        public XfiPageView(string pageUrl, Type pageView, Type viewModel, Idiom targetIdiom = null, Orientation targetOrientation = null, params object[] args)
         {
             if (string.IsNullOrWhiteSpace(pageUrl))
             {
@@ -27,8 +27,9 @@
             this.PageURL = pageUrl;
             this.PageView = pageView ?? throw new ArgumentNullException(nameof(pageView));
             this.ViewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
-            this.TargetIdiom = targetIdiom ?? Idiom.Phone;
-            this.TargetOrientation = targetOrientation ?? Orientation.Portrait;
+            this.TargetIdiom = targetIdiom ?? Defaults.Idiom;
+            this.TargetOrientation = targetOrientation ?? Defaults.Orientation;
+            this.DefaultArgs = args;
 
             if (!typeof(XfiViewModel).IsAssignableFrom(viewModel))
             {
@@ -40,6 +41,7 @@
                 throw new InvalidPageTypeException($"Page type {pageView} is not a valid XFI View");
             }
         }
+
 
         /// <summary>
         /// The url / id of the page for navigation.
@@ -67,6 +69,11 @@
         public Orientation TargetOrientation { get; private set; }
 
         /// <summary>
+        /// Default arguments to be be used none are set at navigation.
+        /// </summary>
+        public object[] DefaultArgs { get; private set; }
+
+        /// <summary>
         /// Register this XFI PageView for navigation.
         /// </summary>
         public void Register()
@@ -84,6 +91,8 @@
 
         internal Page CreateInstance(params object[] args)
         {
+            args ??= this.DefaultArgs;
+
             var viewModelInstance = (XfiViewModel)Activator.CreateInstance(this.ViewModel);
             viewModelInstance.SetArgs(args);
 

@@ -51,35 +51,39 @@
         /// <param name="allowMultiple">Allow multiple instances of this page type.</param>
         /// <param name="replace">Whether or not to replace an existing page in the stack with the new page.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public static async Task Push(string pageUrl, bool isModal = false, bool allowMultiple = false, bool replace = false)
+        public static async Task Push(string pageUrl, bool? isModal = null, bool? allowMultiple = null, bool? replace = null, params object[] args)
         {
             if (string.IsNullOrWhiteSpace(pageUrl))
             {
                 throw new ArgumentException($"'{nameof(pageUrl)}' cannot be null or whitespace.", nameof(pageUrl));
             }
 
+            var isModalValue = isModal ?? Defaults.IsModal;
+            var allowMultipleValue = allowMultiple ?? Defaults.AllowMultiple;
+            var replaceValue = replace ?? Defaults.ReplaceInstance;
+
             var foundPage = ViewsStore.GetPage(pageUrl);
 
-            var openPages = IsPageOpen(pageUrl, isModal);
+            var openPages = IsPageOpen(pageUrl, isModalValue);
 
             Page newPage;
 
-            if (!allowMultiple && replace)
+            if (!allowMultipleValue && replaceValue)
             {
-                newPage = foundPage.CreateInstance();
+                newPage = foundPage.CreateInstance(args);
                 RemovePages(openPages);
             }
-            else if (!allowMultiple && !replace && openPages.Count > 0)
+            else if (!allowMultipleValue && !replaceValue && openPages.Count > 0)
             {
                 newPage = openPages.FirstOrDefault();
                 RemovePages(openPages);
             }
             else
             {
-                newPage = foundPage.CreateInstance();
+                newPage = foundPage.CreateInstance(args);
             }
 
-            if (isModal)
+            if (isModalValue)
                 await Instance.Navigation.PushModalAsync(newPage, true);
             else
                 await Instance.Navigation.PushAsync(newPage, true);
@@ -92,11 +96,11 @@
         /// <param name="isModal">If the page to display should be a modal.</param>
         /// <param name="allowMultiple">Allow multiple instances of this page.</param>
         /// <param name="replace">Whether or not to replace an existing page in the stack with the new page.</param>
-        public static void PushSync(string pageUrl, bool isModal = false, bool allowMultiple = false, bool replace = false)
+        public static void PushSync(string pageUrl, bool? isModal = null, bool? allowMultiple = null, bool? replace = null, params object[] args)
         {
             try
             {
-                var task = Push(pageUrl, isModal, allowMultiple, replace);
+                var task = Push(pageUrl, isModal, allowMultiple, replace, args);
                 task.Wait();
             }
             catch(Exception ex)
@@ -110,9 +114,11 @@
         /// </summary>
         /// <param name="isModal">If the screen to display should be a modal.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public static async Task Pop(bool isModal = false)
+        public static async Task Pop(bool? isModal = null)
         {
-            if (isModal)
+            var isModalValue = isModal ?? Defaults.IsModal;
+
+            if (isModalValue)
                 await Instance.Navigation.PopModalAsync(true);
             else
                 await Instance.Navigation.PopAsync(true);
@@ -122,7 +128,7 @@
         /// Pop the current page from the navigation stack.
         /// </summary>
         /// <param name="isModal">If the screen to display should be a modal.</param>
-        public static void PopSync(bool isModal = false)
+        public static void PopSync(bool? isModal = null)
         {
             try
             {
@@ -143,9 +149,54 @@
         /// <param name="viewModel">The type of viewmodel to use for this combination.</param>
         /// <param name="targetIdiom">The perfered idiom for this page.</param>
         /// <param name="targetOrientation">The prefered orientation for this page.</param>
-        public static void Register(string url, Type view, Type viewModel, Idiom targetIdiom = null, Orientation targetOrientation = null)
+        public static void Register(string url, Type view, Type viewModel, Idiom targetIdiom = null, Orientation targetOrientation = null, params object[] args)
         {
-            new XfiPageView(url, view, viewModel, targetIdiom, targetOrientation).Register();
+            new XfiPageView(url, view, viewModel, targetIdiom, targetOrientation, args).Register();
+        }
+
+        /// <summary>
+        /// Set the default value for opening a page as modal.
+        /// </summary>
+        /// <param name="value">If pages should be opened as modal by default.</param>
+        public static void SetDefaultIsModal(bool value)
+        {
+            Defaults.IsModal = value;
+        }
+
+        /// <summary>
+        /// Set the default value for allowing multiple of the same page.
+        /// </summary>
+        /// <param name="value">If multiple instances of the same pages are allowd.</param>
+        public static void SetDefaultAllowMultiple(bool value)
+        {
+            Defaults.AllowMultiple = value;
+        }
+
+        /// <summary>
+        /// Set the default value for replacing an existing open page with a new instance.
+        /// </summary>
+        /// <param name="value">If exsting open pages of the same type get replaced with a new instance.</param>
+        public static void SetDefaultReplaceInstance(bool value)
+        {
+            Defaults.ReplaceInstance = value;
+        }
+
+        /// <summary>
+        /// Set the default value for prefered idiom.
+        /// </summary>
+        /// <param name="value">What the perfered idiom should be.</param>
+        public static void SetDefaultIdiom(Idiom value)
+        {
+            Defaults.Idiom = value;
+        }
+
+        /// <summary>
+        /// Set the default value for the prefered orientation.
+        /// </summary>
+        /// <param name="value">What the prefered orientation should be.</param>
+        public static void SetDefaultOrientation(Orientation value)
+        {
+            Defaults.Orientation = value;
         }
 
         private static List<Page> IsPageOpen(string url, bool isModal)

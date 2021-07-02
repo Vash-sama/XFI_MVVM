@@ -1,6 +1,7 @@
 ﻿namespace XFI_MVVM.Enums
 {
     using Xamarin.Essentials;
+    using XFI_MVVM.Core;
 
     public class Idiom : Enumeration
     {
@@ -42,8 +43,7 @@
                 return Watch;
             }
 
-            // TODO : change to system default.
-            return Phone;
+            return Defaults.Idiom;
         }
     }
 }

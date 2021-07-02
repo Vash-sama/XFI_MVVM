@@ -52,6 +52,13 @@
         }
 
         [TestMethod]
+        public void Navigate_WithArgs()
+        {
+            Navigation.Init("Root");
+            Navigation.PushSync("Page2", null, null, null, "Property1", "Property2");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Navigate_NullUrl()
         {
@@ -88,7 +95,7 @@
         {
             Navigation.Init("Root");
             await Navigation.Push("Page2");
-            await Navigation.Push("Page2");
+            await Navigation.Push("Page2", null, false, false, "Property1", "Property2");
 
             // Check only the root page and second page are in stack.
             Assert.IsTrue(Navigation.Instance.Navigation.NavigationStack.Count == 2);
@@ -97,6 +104,8 @@
         [TestMethod]
         public async Task NavigateAsync_Replace()
         {
+            Navigation.SetDefaultAllowMultiple(false);
+
             Navigation.Init("Root");
             await Navigation.Push("Page2");
             await Navigation.Push("Page2", replace:true);
@@ -120,6 +129,8 @@
         [ExpectedException(typeof(InvalidOperationException))]
         public async Task NavigateAsync_PopRootFail()
         {
+            Navigation.SetDefaultAllowMultiple(false);
+
             Navigation.Init("Root");
             await Navigation.Push("Root");
         }

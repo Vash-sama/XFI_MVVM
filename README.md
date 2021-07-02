@@ -23,6 +23,25 @@ ViewModels must at some level inherit the base ViewModel of the package:
 XFI_MVVM.Models.XfiViewModel
 ```
 
+Defaults can be set through methods exposed in Navigation which allow you to set how you want the package to work if no parameters are passed through
+
+```csharp
+// If pages should be opened as modal by default.
+Navigation.SetDefaultIsModal(value)
+
+// If multiple instances of the same page are allowd.
+Navigation.SetDefaultAllowMultiple(value)
+
+// If exsting open pages of the same type get replaced with a new instance.
+Navigation.SetDefaultReplaceInstance(value)
+
+// What the perfered idiom should be.
+Navigation.SetDefaultIdiom(value)
+
+// What the prefered orientation should be.
+Navigation.SetDefaultOrientation(value)
+```
+
 Simply register the views and viewmodels to a key and specify the desired idiom and orientation combo then let the package handle the navigation. 
 
 ```csharp
@@ -44,7 +63,17 @@ It also shows that not all targeted platforms / orientations need seperate views
 Navigation by the shared url / key allows the package to automatically choose which view and viewmodel is most suitable to load by simply using:
 
 ```csharp
-Navigation.PushSync("Page1");
+// Navigate to the registered page by the url provided asynchronously.
+await Navigation.Push("YourPageUrl");
+
+// Navigate to the registered page by the url provided synchronously.
+Navigation.PushSync("YourPageUrl");
+```
+
+To initalise and set the root of the Navigation Page simply use
+
+```csharp
+Navigation.Init("YourRootPageUrl");
 ```
 
 Currently a work in progress and not available to use.

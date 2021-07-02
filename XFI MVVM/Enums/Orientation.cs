@@ -1,6 +1,7 @@
 ﻿namespace XFI_MVVM.Enums
 {
     using Xamarin.Essentials;
+    using XFI_MVVM.Core;
 
     /// <summary>
     /// The device orientation types.
@@ -38,8 +39,7 @@
                 // Swallow exception for unknown.
             }
 
-            // TODO : change to system default.
-            return Portrait;
+            return Defaults.Orientation;
         }
     }
 }
