@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Xamarin.Essentials;
     using Xamarin.Forms;
     using XFI_MVVM.Enums;
     using XFI_MVVM.Models;
@@ -83,10 +84,14 @@
                 newPage = foundPage.CreateInstance(args);
             }
 
-            if (isModalValue)
-                await Instance.Navigation.PushModalAsync(newPage, true);
-            else
-                await Instance.Navigation.PushAsync(newPage, true);
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                if (isModalValue)
+                    await Instance.Navigation.PushModalAsync(newPage, true);
+                else
+                    await Instance.Navigation.PushAsync(newPage, true);
+            });
+
         }
 
         /// <summary>
@@ -103,7 +108,7 @@
                 var task = Push(pageUrl, isModal, allowMultiple, replace, args);
                 task.Wait();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex.InnerException;
             }
@@ -118,10 +123,13 @@
         {
             var isModalValue = isModal ?? Defaults.IsModal;
 
-            if (isModalValue)
-                await Instance.Navigation.PopModalAsync(true);
-            else
-                await Instance.Navigation.PopAsync(true);
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                if (isModalValue)
+                    await Instance.Navigation.PopModalAsync(true);
+                else
+                    await Instance.Navigation.PopAsync(true);
+            });
         }
 
         /// <summary>
