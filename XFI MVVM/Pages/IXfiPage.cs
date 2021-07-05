@@ -9,5 +9,7 @@
         internal void SetArgs(object[] args);
 
         internal string PageUrl { get; set; }
+
+        internal XfiViewModel ViewModel { get; set; }
     }
 }

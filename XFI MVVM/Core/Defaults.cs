@@ -13,5 +13,9 @@
         public static Idiom Idiom { get; set; } = Idiom.Phone;
 
         public static Orientation Orientation { get; set; } = Orientation.Portrait;
+
+        public static bool HandleOrientationChange { get; set; } = true;
+
+        public static bool TryToKeepViewModelOnOrientationChange { get; set; } = true;
     }
 }

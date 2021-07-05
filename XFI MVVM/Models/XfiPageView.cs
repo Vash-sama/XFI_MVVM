@@ -99,7 +99,22 @@
             var pageViewInstance = (Page)Activator.CreateInstance(this.PageView);
             var xfiPage = (IXfiPage)pageViewInstance;
             xfiPage.SetArgs(args);
-            xfiPage.SetBinding(viewModelInstance);
+            xfiPage.ViewModel = viewModelInstance;
+            xfiPage.SetBinding(xfiPage.ViewModel);
+            xfiPage.PageUrl = this.PageURL;
+
+            return pageViewInstance;
+        }
+
+        internal Page CreateInstance(XfiViewModel viewModelInstance)
+        {
+            var args = viewModelInstance.Args ?? this.DefaultArgs;
+
+            var pageViewInstance = (Page)Activator.CreateInstance(this.PageView);
+            var xfiPage = (IXfiPage)pageViewInstance;
+            xfiPage.SetArgs(args);
+            xfiPage.ViewModel = viewModelInstance;
+            xfiPage.SetBinding(xfiPage.ViewModel);
             xfiPage.PageUrl = this.PageURL;
 
             return pageViewInstance;

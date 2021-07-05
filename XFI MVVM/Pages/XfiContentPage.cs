@@ -15,6 +15,8 @@
 
         string IXfiPage.PageUrl { get ; set; }
 
+        XfiViewModel IXfiPage.ViewModel { get; set; }
+
         void IXfiPage.SetBinding(XfiViewModel viewModel)
         {
             this.BindingContext = viewModel;

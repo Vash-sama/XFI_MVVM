@@ -11,6 +11,15 @@
         private Orientation(int id, string name)
                  : base(id, name)
         {
+            DeviceDisplay.MainDisplayInfoChanged += this.DeviceDisplay_MainDisplayInfoChanged;
+        }
+
+        private void DeviceDisplay_MainDisplayInfoChanged(object sender, DisplayInfoChangedEventArgs e)
+        {
+            if (!Defaults.HandleOrientationChange)
+            {
+                return;
+            }
         }
 
         public static Orientation Portrait = new(0, nameof(Portrait));

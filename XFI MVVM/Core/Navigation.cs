@@ -54,21 +54,26 @@
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task Push(string pageUrl, bool? isModal = null, bool? allowMultiple = null, bool? replace = null, params object[] args)
         {
+            // If no url is provided exit.
             if (string.IsNullOrWhiteSpace(pageUrl))
             {
                 throw new ArgumentException($"'{nameof(pageUrl)}' cannot be null or whitespace.", nameof(pageUrl));
             }
 
+            Page newPage;
+
+            // Setup the values to use from either defaults or passed value.
             var isModalValue = isModal ?? Defaults.IsModal;
             var allowMultipleValue = allowMultiple ?? Defaults.AllowMultiple;
             var replaceValue = replace ?? Defaults.ReplaceInstance;
 
+            // Get the page to nav to.
             var foundPage = ViewsStore.GetPage(pageUrl);
 
+            // If the page is already open as an instance.
             var openPages = IsPageOpen(pageUrl, isModalValue);
 
-            Page newPage;
-
+            // Based of values, create new instances and / remove pages or move existing instance.
             if (!allowMultipleValue && replaceValue)
             {
                 newPage = foundPage.CreateInstance(args);
@@ -205,6 +210,90 @@
         public static void SetDefaultOrientation(Orientation value)
         {
             Defaults.Orientation = value;
+        }
+
+        /// <summary>
+        /// Set if the package should handle the orientation change using internal events to change to a different view automatically.
+        /// </summary>
+        /// <param name="value">Have the package handle orientation change or not.</param>
+        public static void SetHandleOrientationChange(bool value)
+        {
+            Defaults.HandleOrientationChange = value;
+        }
+
+        /// <summary>
+        /// Set if the package should try to keep the existing instance of viewModel when changing view to a new orientation.
+        /// </summary>
+        /// <param name="value">If the viewmodel should be reused when orientation changes or not.</param>
+        public static void SetTryToKeepViewModelOnOrientationChange(bool value)
+        {
+            Defaults.TryToKeepViewModelOnOrientationChange = value;
+        }
+
+        internal static void OrientationChange()
+        {
+            Page newPage = null;
+
+            // Find if existing page is modal or not.
+            var isModal = IsModal();
+
+            // Get current page open.
+            var currentPage = GetCurrentPage(isModal);
+            var pageUrl = ((IXfiPage)currentPage).PageUrl;
+
+            // Get new page.
+            var foundPage = ViewsStore.GetPage(pageUrl);
+
+            // If the page found isn't specifically targeting the new orientation return.
+            if (foundPage.TargetOrientation != Orientation.GetOrientation())
+            {
+                return;
+            }
+
+            // If the system is setup to keep view model.
+            if (Defaults.TryToKeepViewModelOnOrientationChange)
+            {
+                // Get current pages viewmodel.
+                var viewModel = ((IXfiPage)currentPage).ViewModel;
+
+                // Only if the viewmodel type matches original page, create a new view with existing viewmodel.
+                if (foundPage.ViewModel == viewModel.GetType())
+                {
+                    newPage = foundPage.CreateInstance(viewModel);
+                }
+            }
+
+            // If the above hasnt setup the page, just create it as normally.
+            if (newPage == null)
+                newPage = foundPage.CreateInstance();
+
+
+            // Remove the original apge before re-loading new one.
+            RemovePages(new List<Page>() { currentPage });
+
+            // Navigation to the new page.
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                if (isModal)
+                    await Instance.Navigation.PushModalAsync(newPage, true);
+                else
+                    await Instance.Navigation.PushAsync(newPage, true);
+            });
+
+        }
+
+        private static bool IsModal()
+        {
+            return Instance.Navigation.ModalStack.Any();
+        }
+
+        private static Page GetCurrentPage(bool isModal)
+        {
+            var stack = Instance.Navigation.NavigationStack;
+            if (isModal)
+                stack = Instance.Navigation.ModalStack;
+
+            return stack.LastOrDefault();
         }
 
         private static List<Page> IsPageOpen(string url, bool isModal)
