@@ -18,8 +18,7 @@
         /// <param name="root">Page to use as the root of the navigation.</param>
         private Navigation(Page root)
             : base(root)
-        {
-        }
+        { }
 
         /// <summary>
         /// Gets the persistent user details.
@@ -244,6 +243,12 @@
             // Get new page.
             var foundPage = ViewsStore.GetPage(pageUrl);
 
+            // Dont re-load the same page.
+            if (foundPage.PageView == currentPage.GetType())
+            {
+                return;
+            }
+
             // If the page found isn't specifically targeting the new orientation return.
             if (foundPage.TargetOrientation != Orientation.GetOrientation())
             {
@@ -267,11 +272,7 @@
             if (newPage == null)
                 newPage = foundPage.CreateInstance();
 
-
-            // Remove the original apge before re-loading new one.
-            RemovePages(new List<Page>() { currentPage });
-
-            // Navigation to the new page.
+            // Navigation to the new page before removing to prevent flashing.
             MainThread.BeginInvokeOnMainThread(async () =>
             {
                 if (isModal)
@@ -280,6 +281,8 @@
                     await Instance.Navigation.PushAsync(newPage, true);
             });
 
+            // Remove the original apge before re-loading new one.
+            RemovePages(new List<Page>() { currentPage });
         }
 
         private static bool IsModal()

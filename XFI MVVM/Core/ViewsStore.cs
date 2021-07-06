@@ -2,6 +2,8 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Xamarin.Essentials;
+    using XFI_MVVM.Enums;
     using XFI_MVVM.Exceptions;
     using XFI_MVVM.Models;
 
@@ -10,7 +12,9 @@
         private static ViewsStore _instance;
 
         private ViewsStore()
-        { }
+        {
+            DeviceDisplay.MainDisplayInfoChanged += Orientation.DeviceDisplay_MainDisplayInfoChanged;
+        }
 
         /// <summary>
         /// Gets the persistent instance.
