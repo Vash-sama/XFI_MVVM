@@ -18,7 +18,9 @@
         /// <param name="root">Page to use as the root of the navigation.</param>
         private Navigation(Page root)
             : base(root)
-        { }
+        {
+            this.Popped += this.Navigation_Popped;
+        }
 
         /// <summary>
         /// Gets the persistent user details.
@@ -265,6 +267,9 @@
                 if (foundPage.ViewModel == viewModel.GetType())
                 {
                     newPage = foundPage.CreateInstance(viewModel);
+
+                    // Reset viewmodels known orientation.
+                    viewModel.CurrentOrientation = Orientation.GetOrientation();
                 }
             }
 
@@ -279,10 +284,10 @@
                     await Instance.Navigation.PushModalAsync(newPage, true);
                 else
                     await Instance.Navigation.PushAsync(newPage, true);
-            });
 
-            // Remove the original apge before re-loading new one.
-            RemovePages(new List<Page>() { currentPage });
+                // Remove the original apge before re-loading new one.
+                RemovePages(new List<Page>() { currentPage });
+            });
         }
 
         private static bool IsModal()
@@ -313,6 +318,29 @@
         {
             foreach (var thisPage in openPages)
                 Instance.Navigation.RemovePage(thisPage);
+        }
+
+        private void Navigation_Popped(object sender, NavigationEventArgs e)
+        {
+            if (!Defaults.HandleOrientationChange)
+            {
+                return;
+            }
+
+            // Find if existing page is modal or not.
+            var isModal = IsModal();
+
+            // Get current page open.
+            var currentPage = GetCurrentPage(isModal);
+
+            // Get current viewmodel.
+            var viewModel = ((IXfiPage)currentPage).ViewModel;
+
+            // If current viewmodel remembered orientation is different from current orientation - reload.
+            if (viewModel.CurrentOrientation != Orientation.GetOrientation())
+            {
+                OrientationChange();
+            }
         }
     }
 }
