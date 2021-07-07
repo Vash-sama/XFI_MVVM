@@ -15,7 +15,11 @@
         public static Idiom Desktop = new(2, nameof(Desktop));
         public static Idiom TV = new(3, nameof(TV));
         public static Idiom Watch = new(4, nameof(Watch));
-        
+
+        /// <summary>
+        /// Get the current Idiom of the device.
+        /// </summary>
+        /// <returns>The current Idiom as <see cref="Idiom"/> />
         public static Idiom GetIdiom()
         {
             if (DeviceInfo.Idiom == DeviceIdiom.Phone)

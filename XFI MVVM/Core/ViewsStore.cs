@@ -29,8 +29,8 @@
         internal static XfiPageView GetPage(string url)
         {
             // Get current Orientiation and Idiom.
-            var orientiation = Enums.Orientation.GetOrientation();
-            var idiom = Enums.Idiom.GetIdiom();
+            var orientiation = Orientation.GetOrientation();
+            var idiom = Idiom.GetIdiom();
 
             // Get all registered pages with the url provided.
             var pages = Instance.PageViews.Where(b => b.PageURL.ToLower() == url.ToLower());
@@ -53,6 +53,6 @@
             var foundPage = foundOrientation.FirstOrDefault();
 
             return foundPage ?? throw new PageNotFoundException($"Could not find suitable page for url:'{url}', idiom:'{idiom}', and orientation:'{orientiation}'");
-        }     
+        }
     }
 }

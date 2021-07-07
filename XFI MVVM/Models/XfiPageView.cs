@@ -42,7 +42,6 @@
             }
         }
 
-
         /// <summary>
         /// The url / id of the page for navigation.
         /// </summary>
@@ -86,7 +85,7 @@
         /// </summary>
         public void DeRegister()
         {
-            ViewsStore.Instance.PageViews.Remove(this);
+            _ = ViewsStore.Instance.PageViews.Remove(this);
         }
 
         internal Page CreateInstance(params object[] args)
