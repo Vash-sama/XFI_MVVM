@@ -317,7 +317,10 @@
         private static void RemovePages(List<Page> openPages)
         {
             foreach (var thisPage in openPages)
-                Instance.Navigation.RemovePage(thisPage);
+            {
+                if (Instance.Navigation.NavigationStack.Contains(thisPage))
+                    Instance.Navigation.RemovePage(thisPage);
+            }
         }
 
         private void Navigation_Popped(object sender, NavigationEventArgs e)
