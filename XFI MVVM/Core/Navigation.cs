@@ -10,7 +10,7 @@
     using XFI_MVVM.Models;
     using XFI_MVVM.Pages;
 
-    public class Navigation : NavigationPage
+    public partial class Navigation : NavigationPage
     {
         private string rootUrl;
 
@@ -46,6 +46,19 @@
 
             Instance = new Navigation(newPage);
             Instance.rootUrl = pageUrl;
+        }
+
+        /// <summary>
+        /// Register a new page for navigation.
+        /// </summary>
+        /// <param name="url">The url / key for navigation</param>
+        /// <param name="view">The type of view to use for this combination.</param>
+        /// <param name="viewModel">The type of viewmodel to use for this combination.</param>
+        /// <param name="targetIdiom">The perfered idiom for this page.</param>
+        /// <param name="targetOrientation">The prefered orientation for this page.</param>
+        public static void Register(string url, Type view, Type viewModel, Idiom targetIdiom = null, Orientation targetOrientation = null, params object[] args)
+        {
+            new XfiPageView(url, view, viewModel, targetIdiom, targetOrientation, args).Register();
         }
 
         /// <summary>
@@ -191,91 +204,6 @@
             {
                 throw ex.InnerException;
             }
-        }
-
-        /// <summary>
-        /// Register a new page for navigation.
-        /// </summary>
-        /// <param name="url">The url / key for navigation</param>
-        /// <param name="view">The type of view to use for this combination.</param>
-        /// <param name="viewModel">The type of viewmodel to use for this combination.</param>
-        /// <param name="targetIdiom">The perfered idiom for this page.</param>
-        /// <param name="targetOrientation">The prefered orientation for this page.</param>
-        public static void Register(string url, Type view, Type viewModel, Idiom targetIdiom = null, Orientation targetOrientation = null, params object[] args)
-        {
-            new XfiPageView(url, view, viewModel, targetIdiom, targetOrientation, args).Register();
-        }
-
-        /// <summary>
-        /// Set the default value for opening a page as modal.
-        /// </summary>
-        /// <param name="value">If pages should be opened as modal by default.</param>
-        public static void SetDefaultIsModal(bool value)
-        {
-            Defaults.IsModal = value;
-        }
-
-        /// <summary>
-        /// Set the default value for allowing multiple of the same page.
-        /// </summary>
-        /// <param name="value">If multiple instances of the same pages are allowd.</param>
-        public static void SetDefaultAllowMultiple(bool value)
-        {
-            Defaults.AllowMultiple = value;
-        }
-
-        /// <summary>
-        /// Set the default value for replacing an existing open page with a new instance.
-        /// </summary>
-        /// <param name="value">If exsting open pages of the same type get replaced with a new instance.</param>
-        public static void SetDefaultReplaceInstance(bool value)
-        {
-            Defaults.ReplaceInstance = value;
-        }
-
-        /// <summary>
-        /// Set the default value for prefered idiom.
-        /// </summary>
-        /// <param name="value">What the perfered idiom should be.</param>
-        public static void SetDefaultIdiom(Idiom value)
-        {
-            Defaults.Idiom = value;
-        }
-
-        /// <summary>
-        /// Set the default value for the prefered orientation.
-        /// </summary>
-        /// <param name="value">What the prefered orientation should be.</param>
-        public static void SetDefaultOrientation(Orientation value)
-        {
-            Defaults.Orientation = value;
-        }
-
-        /// <summary>
-        /// Set if the package should handle the orientation change using internal events to change to a different view automatically.
-        /// </summary>
-        /// <param name="value">Have the package handle orientation change or not.</param>
-        public static void SetHandleOrientationChange(bool value)
-        {
-            Defaults.HandleOrientationChange = value;
-        }
-
-        /// <summary>
-        /// Set if the package should try to keep the existing instance of viewModel when changing view to a new orientation.
-        /// </summary>
-        /// <param name="value">If the viewmodel should be reused when orientation changes or not.</param>
-        public static void SetTryToKeepViewModelOnOrientationChange(bool value)
-        {
-            Defaults.TryToKeepViewModelOnOrientationChange = value;
-        }
-
-        /// <summary>
-        /// Set an override idiom if you want your application to figure the idiom out itself, or to use custom ones.
-        /// </summary>
-        /// <param name="value">The idiom to use throughout regardless of what the package sees the device as.</param>
-        public static void SetIdiomOverride(Idiom value)
-        {
-            Defaults.IdiomOverride = value;
         }
 
         internal static void OrientationChange()

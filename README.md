@@ -14,7 +14,7 @@ The package will select the page to load by prioritsing the idiom, then filterin
 Views you wish to use must at some level inherit one of the XFI page types currently supported (more to come):
 
 ```csharp
-XFI_MVVM.Pages.XfiContePage
+XFI_MVVM.Pages.XfiContentPage
 ```
 
 ViewModels must at some level inherit the base ViewModel of the package:
@@ -27,19 +27,28 @@ Defaults can be set through methods exposed in Navigation which allow you to set
 
 ```csharp
 // If pages should be opened as modal by default.
-Navigation.SetDefaultIsModal(value)
+Navigation.SetDefaultIsModal(value);
 
 // If multiple instances of the same page are allowd.
-Navigation.SetDefaultAllowMultiple(value)
+Navigation.SetDefaultAllowMultiple(value);
 
 // If exsting open pages of the same type get replaced with a new instance.
-Navigation.SetDefaultReplaceInstance(value)
+Navigation.SetDefaultReplaceInstance(value);
 
 // What the perfered idiom should be.
-Navigation.SetDefaultIdiom(value)
+Navigation.SetDefaultIdiom(value);
 
 // What the prefered orientation should be.
-Navigation.SetDefaultOrientation(value)
+Navigation.SetDefaultOrientation(value);
+
+// If the package should handle device orientation change and try to reload a more appropriate view.
+Navigation.SetHandleOrientationChange(value);
+
+// When package is set to handle orientation change, setting this to true will cause the package to try to keep the viewmodel instance for an orientation change if the viewmodel types are the same for both registered views.
+Navigation.SetTryToKeepViewModelOnOrientationChange(value);
+
+// Forces the package to use the supplied idiom regardless. Required if custom idioms are used to allow the package to know which custom idiom is expected.
+Navigation.SetIdiomOverride(value);
 ```
 
 Simply register the views and viewmodels to a key and specify the desired idiom and orientation combo then let the package handle the navigation. 
@@ -79,7 +88,9 @@ Navigation.Init("YourRootPageUrl");
 ## Custom Idioms
 In order to allow extensibility of the package, I have allowed the creation of the Idiom enum, these should start from 5 to keep sequence with existing Idioms but its not vital.
 
-This functionality can be used to create idioms for specific screen sizes that you want e.g. small phone, large phone, but can also be used to AB test views and flows e.g.:
+This functionality can be used to create idioms for specific screen sizes that you want e.g. small phone, large phone, folding phone, etc,
+
+This can also be used to AB test views and flows e.g.:
 
 ```csharp
 var ABTest1 = new Idiom(5, "ABTest1");
