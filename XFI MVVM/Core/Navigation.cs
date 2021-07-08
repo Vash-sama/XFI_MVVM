@@ -12,6 +12,8 @@
 
     public class Navigation : NavigationPage
     {
+        private string rootUrl;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MyNav"/> class.
         /// </summary>
@@ -43,6 +45,7 @@
             var newPage = foundPage.CreateInstance();
 
             Instance = new Navigation(newPage);
+            Instance.rootUrl = pageUrl;
         }
 
         /// <summary>
@@ -68,6 +71,13 @@
             var allowMultipleValue = allowMultiple ?? Defaults.AllowMultiple;
             var replaceValue = replace ?? Defaults.ReplaceInstance;
 
+            // If trying to push a new instance of root but dont have allow multiple, pop back to root.
+            if (pageUrl == Instance.rootUrl && !allowMultipleValue)
+            {
+                await PopToRoot();
+                return;
+            }
+                
             // Get the page to nav to.
             var foundPage = ViewsStore.GetPage(pageUrl);
 
@@ -147,6 +157,34 @@
             try
             {
                 var task = Pop(isModal);
+                task.Wait();
+            }
+            catch (Exception ex)
+            {
+                throw ex.InnerException;
+            }
+        }
+
+        /// <summary>
+        /// Pop all the way back to root.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task PopToRoot()
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                await Instance.Navigation.PopToRootAsync(true);
+            });
+        }
+
+        /// <summary>
+        /// Pop all the way back to root.
+        /// </summary>
+        public static void PopToRootSync()
+        {
+            try
+            {
+                var task = PopToRoot();
                 task.Wait();
             }
             catch (Exception ex)
