@@ -12,6 +12,8 @@
 
         public static Idiom Idiom { get; set; } = Idiom.Phone;
 
+        public static Idiom IdiomOverride { get; set; } = null;
+
         public static Orientation Orientation { get; set; } = Orientation.Portrait;
 
         public static bool HandleOrientationChange { get; set; } = true;

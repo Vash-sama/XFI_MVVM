@@ -76,5 +76,37 @@ To initalise and set the root of the Navigation Page simply use
 Navigation.Init("YourRootPageUrl");
 ```
 
+## Custom Idioms
+In order to allow extensibility of the package, I have allowed the creation of the Idiom enum, these should start from 5 to keep sequence with existing Idioms but its not vital.
+
+This functionality can be used to create idioms for specific screen sizes that you want e.g. small phone, large phone, but can also be used to AB test views and flows e.g.:
+
+```csharp
+var ABTest1 = new Idiom(5, "ABTest1");
+var ABTest2 = new Idiom(6, "ABTest2");
+```
+
+To use these custom idioms you must handle the idiom selection in your own app, and specify to the package which idiom you plan to use as an override.
+
+In this example i have 2 idioms and the application can decide if the user is group 1 or not and specify the idiom override at any point, this can be returned to Null to reset.
+
+```csharp
+if (userInGroup1)
+    Navigation.SetIdiomOverride(ABTest1);
+else
+    Navigation.SetIdiomOverride(ABTest2);
+```
+If no screen layout is found that matches the override it will use the same logic to find the most relevent view to display.
+
+To use them for your own screen simply register a screen with your custom idiom.
+
+```csharp
+Navigation.Register("Root", typeof(Views.ABTesting.Root1), typeof(ViewModels.Root), ABTest1);
+Navigation.Register("Root", typeof(Views.ABTesting.Root2), typeof(ViewModels.Root), ABTest2);
+```
+
+Where the above will use root1 for users in group 1 but root2 for everyone else.
+
+
 Currently a work in progress and not available to use.
 Keep track of progress and roadmap on my trello board : https://trello.com/b/PNUTzHg7

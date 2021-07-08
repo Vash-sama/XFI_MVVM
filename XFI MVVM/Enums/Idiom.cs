@@ -5,7 +5,12 @@
 
     public class Idiom : Enumeration
     {
-        private Idiom(int id, string name)
+        /// <summary>
+        /// Create a new idiom for custom setups.
+        /// </summary>
+        /// <param name="id">The id of the Idiom, start from 5.</param>
+        /// <param name="name">The plain text name of the idiom.</param>
+        public Idiom(int id, string name)
                  : base(id, name)
         {
         }
@@ -22,6 +27,11 @@
         /// <returns>The current Idiom as <see cref="Idiom"/> />
         public static Idiom GetIdiom()
         {
+            if (Defaults.IdiomOverride != null)
+            {
+                return Defaults.IdiomOverride;
+            }
+
             if (DeviceInfo.Idiom == DeviceIdiom.Phone)
             {
                 return Phone;

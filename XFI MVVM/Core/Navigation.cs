@@ -269,6 +269,15 @@
             Defaults.TryToKeepViewModelOnOrientationChange = value;
         }
 
+        /// <summary>
+        /// Set an override idiom if you want your application to figure the idiom out itself, or to use custom ones.
+        /// </summary>
+        /// <param name="value">The idiom to use throughout regardless of what the package sees the device as.</param>
+        public static void SetIdiomOverride(Idiom value)
+        {
+            Defaults.IdiomOverride = value;
+        }
+
         internal static void OrientationChange()
         {
             Page newPage = null;
