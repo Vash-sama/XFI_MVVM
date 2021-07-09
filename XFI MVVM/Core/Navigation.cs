@@ -128,9 +128,10 @@
                     await Instance.Navigation.PushModalAsync(newPage, true);
                 else
                     await Instance.Navigation.PushAsync(newPage, true);
-            });
 
-            Instance.FinishedNavigation?.Invoke(eventArgs);
+                // Inside InvoiceOnMain to force triggering only once the push has taken effect.
+                Instance.FinishedNavigation?.Invoke(eventArgs);
+            });
         }
 
         /// <summary>
@@ -281,9 +282,10 @@
 
                 // Remove the original apge before re-loading new one.
                 RemovePages(new List<Page>() { currentPage });
-            });
 
-            Instance.FinishedNavigation?.Invoke(eventArgs);
+                // Inside InvoiceOnMain to force triggering only once the push has taken effect.
+                Instance.FinishedNavigation?.Invoke(eventArgs);
+            });
         }
 
         private static bool IsModal()

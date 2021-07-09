@@ -1,6 +1,18 @@
 # XFI_MVVM
 Xamarin Forms Idiom based MVVM Navigation
 
+# Contents:
+ 1. [Concept](#concept)
+ 2. [Basic usage](#basic-usage)
+    1. [Inheritance](#inheritance)
+    2. [Defaults](#defaults)
+    3. [Register Pages](#register-pages)
+    4. [Navigation](#navigation)
+    5. [Initalize](#initalize)
+ 3. [Events](#events)
+ 4. [Custom Idioms](#custom-idioms)
+ 5. [Roadmap](#Roadmap)
+
 ## Concept
 This is a package is being created to allow Xamarin Forms navigation to implement MVVM architecture, but focused on Idiom / Orientation specific views.
 
@@ -11,6 +23,7 @@ This package works by using types instead of instances to save having all views 
 The package will select the page to load by prioritsing the idiom, then filtering by orientation, and using the most appropriate page registered, so not all combinations must be registered for it to operate.
 
 ## Basic usage
+### Inheritance
 Views you wish to use must at some level inherit one of the XFI page types currently supported (more to come):
 
 ```csharp
@@ -23,6 +36,7 @@ ViewModels must at some level inherit the base ViewModel of the package:
 XFI_MVVM.Models.XfiViewModel
 ```
 
+### Defaults
 Defaults can be set through methods exposed in Navigation which allow you to set how you want the package to work if no parameters are passed through
 
 ```csharp
@@ -51,6 +65,7 @@ Navigation.SetTryToKeepViewModelOnOrientationChange(value);
 Navigation.SetIdiomOverride(value);
 ```
 
+### Register Pages
 Simply register the views and viewmodels to a key and specify the desired idiom and orientation combo then let the package handle the navigation. 
 
 ```csharp
@@ -69,6 +84,7 @@ Navigation.Register("Page2", typeof(Views.Shared.Page2), typeof(ViewModels.Page2
 In the above example it shows how view models can be shared between different views or also seperated with idiom or orientation.
 It also shows that not all targeted platforms / orientations need seperate views or viewmodels.
 
+### Navigation
 Navigation by the shared url / key allows the package to automatically choose which view and viewmodel is most suitable to load by simply using:
 
 ```csharp
@@ -79,11 +95,27 @@ await Navigation.Push("YourPageUrl");
 Navigation.PushSync("YourPageUrl");
 ```
 
+### Initalize
 To initalise and set the root of the Navigation Page simply use
 
 ```csharp
 Navigation.Init("YourRootPageUrl");
 ```
+
+## Events
+This package will trigger events that can be handled throughout the navigation process, 
+All events will pass the NavEvent arguments through which contains the current processing data.
+
+Currently available events are and vaguely inorder:
+
+| Event Name | Description |
+|------------|-------------|
+| `StartedNavigation`       |       This is triggered whenever a navigation is started either through Pushing a new screen or an orientation change handling a new view load. Ideal for starting any loading animations / overlays. |
+| `InitalizingViewModel`    |       This is triggered just before the Instance of a ViewModel is created during navigation. |
+| `InitalisedViewModel`     |       This is triggered after the creation of the ViewModel instance, i.e. after all processing in the ViewModels contructor. |
+| `InitalizingView`         |       This is triggered just before the Instance of the View is created and the ViewModel is bound to it. |
+| `InitalizedView`          |       This is triggered after the creation of the View instance, i.e. after processing the contructor and binding the ViewModel. |
+| `FinishedNavigation`      |       This is triggered after everything has finished processing, the new view should have been pushed to the screen at this point. |
 
 ## Custom Idioms
 In order to allow extensibility of the package, I have allowed the creation of the Idiom enum, these should start from 5 to keep sequence with existing Idioms but its not vital.
@@ -118,6 +150,6 @@ Navigation.Register("Root", typeof(Views.ABTesting.Root2), typeof(ViewModels.Roo
 
 Where the above will use root1 for users in group 1 but root2 for everyone else.
 
-
+## Roadmap
 Currently a work in progress and not available to use.
 Keep track of progress and roadmap on my trello board : https://trello.com/b/PNUTzHg7
