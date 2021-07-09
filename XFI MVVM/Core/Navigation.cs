@@ -30,7 +30,7 @@
         public static Navigation Instance { get; private set; }
 
         /// <summary>
-        /// Initalise the Navigation page.
+        /// Initalize the Navigation page.
         /// </summary>
         /// <param name="root">Starting page of the navigation.</param>
         public static void Init(string pageUrl)
@@ -44,7 +44,7 @@
 
             var newPage = foundPage.CreateInstance();
 
-            Instance = new Navigation(newPage);
+            Instance = new(newPage);
             Instance.rootUrl = pageUrl;
         }
 
@@ -77,6 +77,13 @@
                 throw new ArgumentException($"'{nameof(pageUrl)}' cannot be null or whitespace.", nameof(pageUrl));
             }
 
+            var eventArgs = new NavEventArgs()
+            {
+                EventType = nameof(Push),
+                PageUrl = pageUrl,
+            };         
+            Instance.StartedNavigation?.Invoke(eventArgs);
+
             Page newPage;
 
             // Setup the values to use from either defaults or passed value.
@@ -90,9 +97,11 @@
                 await PopToRoot();
                 return;
             }
-                
+
             // Get the page to nav to.
             var foundPage = ViewsStore.GetPage(pageUrl);
+            eventArgs.PageView = foundPage.PageView;
+            eventArgs.ViewModel = foundPage.ViewModel;
 
             // If the page is already open as an instance.
             var openPages = IsPageOpen(pageUrl, isModalValue);
@@ -121,6 +130,7 @@
                     await Instance.Navigation.PushAsync(newPage, true);
             });
 
+            Instance.FinishedNavigation?.Invoke(eventArgs);
         }
 
         /// <summary>
@@ -217,8 +227,17 @@
             var currentPage = GetCurrentPage(isModal);
             var pageUrl = ((IXfiPage)currentPage).PageUrl;
 
+            var eventArgs = new NavEventArgs()
+            {
+                EventType = nameof(OrientationChange),
+                PageUrl = pageUrl,
+            };
+            Instance.StartedNavigation?.Invoke(eventArgs);
+
             // Get new page.
             var foundPage = ViewsStore.GetPage(pageUrl);
+            eventArgs.PageView = foundPage.PageView;
+            eventArgs.ViewModel = foundPage.ViewModel;
 
             // Dont re-load the same page.
             if (foundPage.PageView == currentPage.GetType())
@@ -263,6 +282,8 @@
                 // Remove the original apge before re-loading new one.
                 RemovePages(new List<Page>() { currentPage });
             });
+
+            Instance.FinishedNavigation?.Invoke(eventArgs);
         }
 
         private static bool IsModal()
