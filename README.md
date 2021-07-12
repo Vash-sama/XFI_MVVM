@@ -99,6 +99,18 @@ await Navigation.Push("YourPageUrl");
 
 // Navigate to the registered page by the url provided synchronously.
 Navigation.PushSync("YourPageUrl");
+
+// Navigate back to previous page asynchronously, disposes the current page.
+await Navigation.Pop();
+
+// Navigate back to previous page synchronously, disposes the current page.
+Navigation.PopSync();
+
+// Navigate back to root page asynchronously, remove and dispose of all other pages in the stack.
+await Navigation.PopToRoot();
+
+// Navigate back to root page synchronously, remove and dispose of all other pages in the stack.
+Navigation.PopToRootSync();
 ```
 
 ### Initalize
