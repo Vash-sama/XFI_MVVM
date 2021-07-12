@@ -26,10 +26,14 @@ The package will select the page to load by prioritsing the idiom, then filterin
 
 ## Basic usage
 ### Inheritance
-Views you wish to use must at some level inherit one of the XFI page types currently supported (more to come):
+Views you wish to use must at some level inherit one of the XFI page types currently supported:
 
 ```csharp
 XFI_MVVM.Pages.XfiContentPage
+XFI_MVVM.Pages.XfiFlyoutPage
+XFI_MVVM.Pages.XfiTabbedPage
+XFI_MVVM.Pages.XfiCarouselPage
+XFI_MVVM.Pages.XfiTemplatedPage
 ```
 
 ViewModels must at some level inherit the base ViewModel of the package:

@@ -4,9 +4,9 @@
     using XFI_MVVM.Models;
 
     /// <summary>
-    /// Inherit to use as a Content Page view.
+    /// Inherit to use as a Flyout Page view.
     /// </summary>
-    public abstract class XfiContentPage : ContentPage, IXfiPage
+    public abstract class XfiFlyoutPage : FlyoutPage, IXfiPage
     {
         /// <summary>
         /// Gets the arguments passed through to this page.
@@ -14,7 +14,7 @@
         public object[] Args { get; private set; }
 
         /// <inheritdoc/>
-        string IXfiPage.PageUrl { get ; set; }
+        string IXfiPage.PageUrl { get; set; }
 
         /// <inheritdoc/>
         XfiViewModel IXfiPage.ViewModel { get; set; }
