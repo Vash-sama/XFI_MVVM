@@ -10,7 +10,7 @@
     using XFI_MVVM.Models;
     using XFI_MVVM.Pages;
 
-    public partial class Navigation : NavigationPage
+    public partial class Navigation : NavigationPage, IDisposable
     {
         private string rootUrl;
 
@@ -22,6 +22,7 @@
             : base(root)
         {
             this.Popped += this.Navigation_Popped;
+            this.PopRequested += this.Navigation_PopRequested;
         }
 
         /// <summary>
@@ -38,6 +39,11 @@
             if (string.IsNullOrWhiteSpace(pageUrl))
             {
                 throw new ArgumentException($"'{nameof(pageUrl)}' cannot be null or whitespace.", nameof(pageUrl));
+            }
+
+            if (Instance != null)
+            {
+                Instance.Dispose();
             }
 
             var foundPage = ViewsStore.GetPage(pageUrl);
@@ -62,6 +68,32 @@
         }
 
         /// <summary>
+        /// DeRegister a page from navigation, disposing of any open instances.
+        /// </summary>
+        /// <param name="url">The url / key for navigation</param>
+        /// <param name="targetIdiom">The perfered idiom for this page.</param>
+        /// <param name="targetOrientation">The prefered orientation for this page.</param>
+        public static void DeRegister(string url, Idiom targetIdiom = null, Orientation targetOrientation = null)
+        {
+            var page = ViewsStore.FindPage(url, targetIdiom, targetOrientation);
+
+            if (page == null)
+                return;
+
+            var openPages = IsPageOpen(url, false);
+
+            var removePages = new List<Page>();
+            foreach (IXfiPage openPage in openPages)
+            {
+                if (openPage.GetType() == page.PageView && openPage.ViewModel.GetType() == page.ViewModel)
+                    removePages.Add((Page)openPage);
+            }
+
+            RemovePages(removePages);
+            page.DeRegister();
+        }
+
+        /// <summary>
         /// Push a new page into the navigation stack.
         /// </summary>
         /// <param name="pageUrl">Page to push.</param>
@@ -81,7 +113,7 @@
             {
                 EventType = nameof(Push),
                 PageUrl = pageUrl,
-            };         
+            };
             Instance.StartedNavigation?.Invoke(eventArgs);
 
             Page newPage;
@@ -195,6 +227,8 @@
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task PopToRoot()
         {
+            Instance.Navigation_PopToRootRequested();
+
             MainThread.BeginInvokeOnMainThread(async () =>
             {
                 await Instance.Navigation.PopToRootAsync(true);
@@ -217,6 +251,26 @@
             }
         }
 
+        /// <summary>
+        /// Dispose of all pages in the stacks and remove all existing handlers.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Navigation_PopToRootRequested();
+
+            var rootPage = (IXfiPage)this.RootPage;
+            var rootViewModel = rootPage.ViewModel;
+
+            rootViewModel.Dispose();
+            rootPage.Dispose();
+
+            this.Popped -= this.Navigation_Popped;
+            this.PopRequested -= this.Navigation_PopRequested;
+        }
+
+        /// <summary>
+        /// Change the view to a more relevent orientation version if available.
+        /// </summary>
         internal static void OrientationChange()
         {
             Page newPage = null;
@@ -288,11 +342,20 @@
             });
         }
 
+        /// <summary>
+        /// Is the current page open a modal page.
+        /// </summary>
+        /// <returns>Is open view a modal.</returns>
         private static bool IsModal()
         {
             return Instance.Navigation.ModalStack.Any();
         }
 
+        /// <summary>
+        /// Get the current open page.
+        /// </summary>
+        /// <param name="isModal">Is the current page modal or not.</param>
+        /// <returns>The found open page.</returns>
         private static Page GetCurrentPage(bool isModal)
         {
             var stack = Instance.Navigation.NavigationStack;
@@ -302,6 +365,12 @@
             return stack.LastOrDefault();
         }
 
+        /// <summary>
+        /// Get open instances of a page by its URL.
+        /// </summary>
+        /// <param name="url">The url being investigated.</param>
+        /// <param name="isModal">If its expected to be modal or not.</param>
+        /// <returns>A list of all instances of the open page.</returns>
         private static List<Page> IsPageOpen(string url, bool isModal)
         {
             var stack = Instance.Navigation.NavigationStack;
@@ -312,15 +381,83 @@
             return (from b in stack where ((IXfiPage)b).PageUrl == url select b).ToList();
         }
 
+        /// <summary>
+        /// Remove all pages from the navigation stack provided.
+        /// </summary>
+        /// <param name="openPages">Open pages to remove from navigation stack.</param>
         private static void RemovePages(List<Page> openPages)
         {
             foreach (var thisPage in openPages)
             {
                 if (Instance.Navigation.NavigationStack.Contains(thisPage))
+                {
+                    // Remove the page from the stack.
                     Instance.Navigation.RemovePage(thisPage);
+
+                    // Dispose View and ViewModel of the page too.
+                    var currentPage = (IXfiPage)thisPage;
+                    var viewModel = currentPage.ViewModel;
+                    viewModel.Dispose();
+                    currentPage.Dispose();
+                }
             }
         }
 
+        /// <summary>
+        /// A navigation pop was requested, trigger dispose of the View and ViewModel.
+        /// </summary>
+        /// <param name="sender">The pop sender.</param>
+        /// <param name="e">The event args of the request.</param>
+        private void Navigation_PopRequested(object sender, Xamarin.Forms.Internals.NavigationRequestedEventArgs e)
+        {
+            // Get current page open.
+            var currentPage = (IXfiPage)e.Page;
+
+            // Get current viewmodel.
+            var viewModel = currentPage.ViewModel;
+
+            viewModel.Dispose();
+            currentPage.Dispose();
+        }
+
+        /// <summary>
+        /// A navigation pop-to-root was requested, trigger dispose of all Views and ViewModels of all pages in the stack.
+        /// </summary>
+        private void Navigation_PopToRootRequested()
+        {
+            // If any open pages are modal.
+            var currentPageModal = IsModal();
+            if (currentPageModal)
+            {
+                foreach (IXfiPage page in Instance.Navigation.ModalStack)
+                {
+                    // Get current viewmodel.
+                    var viewModel = page.ViewModel;
+
+                    viewModel.Dispose();
+                    page.Dispose();
+                }
+            }
+
+            // For the rest of the stack excluding the root page.
+            foreach (IXfiPage page in Instance.Navigation.NavigationStack)
+            {
+                if (page == RootPage)
+                    continue;
+
+                // Get current viewmodel.
+                var viewModel = page.ViewModel;
+
+                viewModel.Dispose();
+                page.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// A navigation page was popped, check if the next page has a better orientation registered.
+        /// </summary>
+        /// <param name="sender">The pop sender.</param>
+        /// <param name="e">The event args of the request.</param>
         private void Navigation_Popped(object sender, NavigationEventArgs e)
         {
             if (!Defaults.HandleOrientationChange)
@@ -328,14 +465,11 @@
                 return;
             }
 
-            // Find if existing page is modal or not.
-            var isModal = IsModal();
-
             // Get current page open.
-            var currentPage = GetCurrentPage(isModal);
+            var currentPage = (IXfiPage)e.Page;
 
             // Get current viewmodel.
-            var viewModel = ((IXfiPage)currentPage).ViewModel;
+            var viewModel = currentPage.ViewModel;
 
             // If current viewmodel remembered orientation is different from current orientation - reload.
             if (viewModel.CurrentOrientation != Orientation.GetOrientation())

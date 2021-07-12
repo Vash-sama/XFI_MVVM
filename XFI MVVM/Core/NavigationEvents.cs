@@ -37,21 +37,37 @@ namespace XFI_MVVM.Core
         /// </summary>
         public event NavEvent FinishedNavigation;
 
+        /// <summary>
+        /// Invoke the navigation event for InitalizedView.
+        /// </summary>
+        /// <param name="e">The nav event args.</param>
         internal static void FoundPage_InitalizedView(NavEventArgs e)
         {
             Instance?.InitalizedView?.Invoke(e);
         }
 
+        /// <summary>
+        /// Invoke the navigation event for InitalizingViewModel.
+        /// </summary>
+        /// <param name="e">The nav event args.</param>
         internal static void FoundPage_InitalizingViewModel(NavEventArgs e)
         {
             Instance?.InitalizingViewModel?.Invoke(e);
         }
 
+        /// <summary>
+        /// Invoke the navigation event for InitalizedViewModel.
+        /// </summary>
+        /// <param name="e">The nav event args.</param>
         internal static void FoundPage_InitalizedViewModel(NavEventArgs e)
         {
             Instance?.InitalizedViewModel?.Invoke(e);
         }
 
+        /// <summary>
+        /// Invoke the navigation event for InitalizingView.
+        /// </summary>
+        /// <param name="e">The nav event args.</param>
         internal static void FoundPage_InitalizingView(NavEventArgs e)
         {
             Instance?.InitalizingView?.Invoke(e);

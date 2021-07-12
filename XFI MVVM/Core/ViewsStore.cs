@@ -26,6 +26,11 @@
         /// </summary>
         internal List<XfiPageView> PageViews { get; } = new List<XfiPageView>();
 
+        /// <summary>
+        /// Get the most relevant page for the provided URL.
+        /// </summary>
+        /// <param name="url">The url to get the page of.</param>
+        /// <returns>The most relevant page.</returns>
         internal static XfiPageView GetPage(string url)
         {
             // Get current Orientiation and Idiom.
@@ -53,6 +58,22 @@
             var foundPage = foundOrientation.FirstOrDefault();
 
             return foundPage ?? throw new PageNotFoundException($"Could not find suitable page for url:'{url}', idiom:'{idiom}', and orientation:'{orientiation}'");
+        }
+
+        /// <summary>
+        /// Find if an open instance of the page and provided idiom and orientation.
+        /// </summary>
+        /// <param name="url">The url of the page being searched for.</param>
+        /// <param name="targetIdiom">The idiom of the page being searched for.</param>
+        /// <param name="targetOrientation">The orientation of the page being searched for.</param>
+        /// <returns>Any found page matching provided details.</returns>
+        internal static XfiPageView FindPage(string url, Idiom targetIdiom = null, Orientation targetOrientation = null)
+        {
+            var idiom = targetIdiom ?? Defaults.Idiom;
+            var orientation = targetOrientation ?? Defaults.Orientation;
+
+            // Get all registered pages with the url provided.
+            return Instance.PageViews.Where(b => b.PageURL.ToLower() == url.ToLower() && b.TargetIdiom == idiom && b.TargetOrientation == orientation).FirstOrDefault();
         }
     }
 }

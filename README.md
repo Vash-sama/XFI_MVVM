@@ -1,17 +1,19 @@
 # XFI_MVVM
 Xamarin Forms Idiom based MVVM Navigation
 
-# Contents:
+# Contents
  1. [Concept](#concept)
- 2. [Basic usage](#basic-usage)
+ 1. [Basic usage](#basic-usage)
     1. [Inheritance](#inheritance)
-    2. [Defaults](#defaults)
-    3. [Register Pages](#register-pages)
-    4. [Navigation](#navigation)
-    5. [Initalize](#initalize)
- 3. [Events](#events)
- 4. [Custom Idioms](#custom-idioms)
- 5. [Roadmap](#Roadmap)
+    1. [Defaults](#defaults)
+    1. [Register Pages](#register-pages)
+    1. [Navigation](#navigation)
+    1. [Initalize](#initalize)
+ 1. [Events](#events)
+ 1. [De-Register Pages](#de-register-pages)
+ 1. [Disposing](#disposing)
+ 1. [Custom Idioms](#custom-idioms)
+ 1. [Roadmap](#Roadmap)
 
 ## Concept
 This is a package is being created to allow Xamarin Forms navigation to implement MVVM architecture, but focused on Idiom / Orientation specific views.
@@ -116,6 +118,28 @@ Currently available events are and vaguely inorder:
 | `InitalizingView`         |       This is triggered just before the Instance of the View is created and the ViewModel is bound to it. |
 | `InitalizedView`          |       This is triggered after the creation of the View instance, i.e. after processing the contructor and binding the ViewModel. |
 | `FinishedNavigation`      |       This is triggered after everything has finished processing, the new view should have been pushed to the screen at this point. |
+
+## De-Register Pages
+Use this to remove pages that have been registered and are not longer going to be navigated to.
+
+```csharp
+Navigation.DeRegister("Page1");
+Navigation.DeRegister("Page1", Idiom.Desktop, Orientation.Landscape);
+```
+
+This will remove the page Page1 with default idiom and orientation from the list and Page1 with specific idiom of Desktop and specific orientation of Landscape.
+
+## Disposing
+All Pages and ViewModels inheriting the requried types of this package will have access to override the `Dispose` method.
+This method will be called for both the View and ViewModel when the page is removed from the stack in anyway.
+
+```csharp
+public override void Dispose()
+{
+    base.Dispose();
+    // Remove handlers or subscriptions here.
+}
+```
 
 ## Custom Idioms
 In order to allow extensibility of the package, I have allowed the creation of the Idiom enum, these should start from 5 to keep sequence with existing Idioms but its not vital.

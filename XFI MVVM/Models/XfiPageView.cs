@@ -7,7 +7,7 @@
     using Xamarin.Forms;
     using XFI_MVVM.Pages;
 
-    internal class XfiPageView
+    internal class XfiPageView : IDisposable
     {
         /// <summary>
         /// New XFI PageView
@@ -99,6 +99,7 @@
         public void DeRegister()
         {
             _ = ViewsStore.Instance.PageViews.Remove(this);
+            this.Dispose();
         }
 
         /// <summary>
@@ -123,6 +124,11 @@
 
         private readonly NavEventArgs eventArgs;
 
+        /// <summary>
+        /// Create a new instance of the view and view model.
+        /// </summary>
+        /// <param name="args">Any parameters to be passed to the view and viewmodel.</param>
+        /// <returns>The new page instance.</returns>
         internal Page CreateInstance(params object[] args)
         {
             args ??= this.DefaultArgs;
@@ -147,6 +153,11 @@
             return pageViewInstance;
         }
 
+        /// <summary>
+        /// Create a new instance of the view but using an existing viewmodel.
+        /// </summary>
+        /// <param name="args">Any parameters to be passed to the view and viewmodel.</param>
+        /// <returns>The new page instance.</returns>
         internal Page CreateInstance(XfiViewModel viewModelInstance)
         {
             var args = viewModelInstance.Args ?? this.DefaultArgs;
@@ -166,9 +177,9 @@
         }
 
         /// <summary>
-        /// Remove handlers on finalize.
+        /// Remove handlers on dispose.
         /// </summary>
-        ~XfiPageView()
+        public void Dispose()
         {
             this.InitalizingViewModel -= Navigation.FoundPage_InitalizingViewModel;
             this.InitalizedViewModel -= Navigation.FoundPage_InitalizedViewModel;
