@@ -1,13 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>XFI_MVVM</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<RootNamespace>XFI_MVVM</RootNamespace>
+		<Version>1.0.0</Version>
+		<Authors>Graham_Forrest</Authors>
+		<PackageId>XFI_MVVM</PackageId>
+		<Company>GF-Dev</Company>
+		<Title>Xamarin Forms Idiom MVVM</Title>
+		<Description>A Xamarin Forms Idiom and Orientation based naviagtion for MVVM projects.
+Replaces the use of a NavigationPage in your project with this package handling all naviagion.</Description>
+		<PackageTags>Xamarin;Xamarin.Forms;Navigation;MVVM;Idiom;Orientation</PackageTags>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageProjectUrl>https://github.com/Vash-sama/XFI_MVVM</PackageProjectUrl>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
-    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
+		<PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\LICENSE">
+	    <Pack>True</Pack>
+	    <PackagePath></PackagePath>
+	  </None>
+	</ItemGroup>
 
 </Project>
