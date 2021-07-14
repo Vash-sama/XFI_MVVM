@@ -191,5 +191,6 @@ Navigation.Register("Root", typeof(Views.ABTesting.Root2), typeof(ViewModels.Roo
 Where the above will use root1 for users in group 1 but root2 for everyone else.
 
 ## Roadmap
-Currently a work in progress and not available to use.
-Keep track of progress and roadmap on my trello board : https://trello.com/b/PNUTzHg7
+Now available on NuGet https://www.nuget.org/packages/XFI_MVVM/ 
+
+Keep track of future plans and progress on the trello roadmap board : https://trello.com/b/PNUTzHg7
